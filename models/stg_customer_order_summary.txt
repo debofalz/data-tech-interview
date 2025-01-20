@@ -62,10 +62,10 @@ order_totals AS (
 
 
 /*
-The code block below is not neccesary as it can be consolidated into the one below
+The code block below is not neccesary as it can be consolidated into the one above.
 I have moved the customer type code to to the block above
 
-The order by is costly as it is an extra resource, It is not needed as We can order in BI tool
+The order by is costly as it is an expensive run-time resource, It is not needed as We can order in BI tool
 */
 
 /*
