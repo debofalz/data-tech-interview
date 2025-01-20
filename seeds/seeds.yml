@@ -1,33 +1,53 @@
+version: 2
+
 seeds:
-  - name: transaction_termination_reasons_seed
-    config:
-      columns_types:
-        TRANSACTION_ID: VARCHAR
-        TERMINATION_REASON: VARCHAR
+  - name: transactions_seed
+    description: "The transactions table contains information about transactions, and contains the following columns:"
+    columns:
+      - name: id
+        description: "The unique identifier of the transaction."
+      - name: bid_id
+        description: "The unique identifier of the accepted bid associated with the transaction."
+      - name: state
+        description: "The current state of the transaction. Transactions in cancelled, expired, closed_paid, approval_declined states are no longer 'active'."
+      - name: transfer_method
+        description: "The method of transfer of the transaction."
+      - name: inserted_at
+        description: "When the transaction record was created."
+      - name: company_id
+        description: "The unique identifier of the issuing company of the shares."
+      - name: num_shares
+        description: "The number of shares associated with each transaction."
+      - name: price_per_share
+        description: "The price per share of the transaction."
+      - name: gross_proceeds
+        description: "The revenue value of the transaction (number of shares multiplied by the price per share)."
+      - name: _fivetran_deleted
+        description: "The value is TRUE when the record has been soft deleted in the production database. The value is false otherwise."
+      - name: _fivetran_synced
+        description: "When the record was synced to the data warehouse."
 
   - name: transaction_transitions_seed
-    config:
-      columns_types:
-        ID: VARCHAR
-        INSERTED_AT: TIMESTAMP
-        UPDATED_AT: TIMESTAMP
-        TRANSACTION_ID: VARCHAR
-        NEW_STATE: VARCHAR
-        TRANSITIONED_AT: TIMESTAMP
-        _FIVETRAN_DELETED: BOOLEAN
-        _FIVETRAN_SYNCED: TIMESTAMP
+    description: "The transaction_transitions table contains information about how transactions move through various states (acts as a log table). This data can be used to identify when transactions entered and exited specific states (e.g. when a transaction closed). It contains the following columns:"
+    columns:
+      - name: id
+        description: "The unique identifier of the transaction transition."
+      - name: transaction_id
+        description: "The unique identifier of the transaction."
+      - name: transitioned_at
+        description: "When the transaction moved into a new state."
+      - name: new_state
+        description: "The new state the transaction moved into."
+      - name: _fivetran_deleted
+        description: "The value is TRUE when the record has been soft deleted in the production database. The value is false otherwise."
+      - name: _fivetran_synced
+        description: "When the record was synced to the data warehouse."
 
-  - name: transactions_seed
-    config:
-      columns_types:
-        ID: VARCHAR
-        BID_ID: VARCHAR
-        STATE: VARCHAR
-        TRANSFER_METHOD: VARCHAR
-        INSERTED_AT: TIMESTAMP
-        COMPANY_ID: VARCHAR
-        NUM_SHARES: INTEGER
-        PRICE_PER_SHARE: INTEGER
-        GROSS_PROCEEDS: INTEGER
-        _FIVETRAN_DELETED: BOOLEAN
-        _FIVETRAN_SYNCED: TIMESTAMP
+
+  - name: transaction_termination_reasons_seed
+    description: "The transaction_termination_reasons table contains information about why transactions were terminated. This table contains rows for each reason."
+    columns:
+      - name: transaction_id
+        description: "The identifier of the transaction."
+      - name: termination_reason
+        description: "The reason(s) a transaction was terminated."

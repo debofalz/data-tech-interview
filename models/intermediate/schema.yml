@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: int_hiive__transaction_transitions
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: opened_at
+        tests:
+          - not_null

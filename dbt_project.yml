@@ -1,5 +1,7 @@
 name: "dbt_hiive"
 version: "1.0.0"
+config-version: 2
+
 
 profile: "dbt_hiive"
 
@@ -13,3 +15,14 @@ snapshot-paths: ["snapshots"]
 clean-targets:
   - "target"
   - "dbt_packages"
+
+models:
+  dbt_hiive:  # Replace with your project name
+    marts:
+      +materialized: table  # Default materialization for marts is table
+    sources:
+      +materialized: view   # Default materialization for sources is view
+    base:
+      +materialized: view   # Default materialization for base is view
+    staging:
+      +materialized: view   # Optionally, set staging models as views

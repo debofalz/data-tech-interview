@@ -1,6 +1,6 @@
 dbt_hiive:
   outputs:
     dev:
-      type: duckdb
-      path: dbt.duckdb
+      type:
+      path: 
   target: dev

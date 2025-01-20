@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: base_hiive__transactions
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: num_shares
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: " >= 0"
+      - name: price_per_share
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: " >= 0"
+      - name: gross_proceeds
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: " = num_shares * price_per_share"
+
+  - name: base_hiive__transaction_transitions
+    columns:
+      - name: transition_id
+        tests:
+          - unique
+          - not_null
+      - name: transaction_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_hiive__transactions')
+              field: transaction_id
+      - name: transition_at
+        tests:
+          - not_null
+      - name: new_state
+        tests:
+          - not_null
+
+  - name: base_hiive__termination_reasons
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_hiive__transactions')
+              field: transaction_id
+      - name: termination_reason
+        tests:
+          - not_null

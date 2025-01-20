@@ -1,0 +1,11 @@
+version: 2
+
+
+sources:
+  - name: raw
+    schema: dev_debo
+    database: hiive
+    tables:
+    - name: transaction_termination_reasons_seed
+    - name: transaction_transitions_seed
+    - name: transactions_seed
