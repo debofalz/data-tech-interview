@@ -8,7 +8,10 @@ raw_customers AS (
        email_address,
        phone_number,
        created_at AS signup_date
-   FROM raw.database.orders
+   FROM {{ source('raw', 'customers') }}
+   /* 1. you were referencing the orders tables here instead of customers
+   2. do not reference the raw table directly from staging refer to the base or source model here */
+
    -- Select all customers regardless of status or signup date for simplicity
 ),
 
@@ -28,17 +31,17 @@ raw_orders AS (
 
 order_totals AS (
    SELECT
-       raw_orders.customer_id,
-       COUNT(raw_orders.order_id) AS total_orders,
-       SUM(raw_orders.total_amount) AS total_spent,
-       MIN(raw_orders.order_date) AS first_order_date,
-       MAX(raw_orders.order_date) AS last_order_date
+       customer_id,
+       COUNT(order_id) AS total_orders,
+       SUM(total_amount) AS total_spent,
+       MIN(order_date) AS first_order_date,
+       MAX(order_date) AS last_order_date
    FROM raw_orders
-   GROUP BY raw_orders.customer_id
+   GROUP BY customer_id
+   --I removed the raw_orders prefix, just to make it easier to read
 ),
 
 
-customer_data AS (
    SELECT
        raw_customers.customer_id,
        CONCAT(raw_customers.first_name, ' ', raw_customers.last_name) AS full_name,
@@ -46,13 +49,26 @@ customer_data AS (
        raw_customers.phone_number,
        order_totals.total_orders,
        order_totals.total_spent,
-       order_totals.first_order_date,
-       order_totals.last_order_date
+       CASE
+           WHEN order_totals.total_spent > 500 THEN 'Premium'
+           ELSE 'Standard'
+       END AS customer_type
+
+       /* order_totals.first_order_date,
+       order_totals.last_order_date */
+       --commented the above out since it was not used in the final block
    FROM raw_customers
    LEFT JOIN order_totals ON raw_customers.customer_id = order_totals.customer_id
-)
 
 
+/*
+The code block below is not neccesary as it can be consolidated into the one below
+I have moved the customer type code to to the block above
+
+The order by is costly as it is an extra resource, It is not needed as We can order in BI tool
+*/
+
+/*
 SELECT
    customer_data.customer_id,
    customer_data.full_name,
@@ -66,3 +82,4 @@ SELECT
    END AS customer_type
 FROM customer_data
 ORDER BY customer_data.total_spent DESC;
+*/
